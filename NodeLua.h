@@ -77,6 +77,7 @@ public:
         }
     }
     sl_assert(false);
+    return -1;
   }
 
   int getIndiceInByName(std::string s){
@@ -86,6 +87,7 @@ public:
         }
     }
     sl_assert(false);
+    return -1;
   }
   std::map<std::string,std::pair<Node*,std::string>>& getPrevNamed(){return prevNamed;}
   std::map<std::string,Node*>& getNextNamed(){return nextNamed;}

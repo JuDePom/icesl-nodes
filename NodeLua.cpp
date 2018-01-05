@@ -54,9 +54,9 @@ std::string Node::codeBefore(){
         s+="__inputmap[\""+edge.first+"\"] = \"" + edge.second.second+s2+"\"\n";
     }
 
-    s+= loadFileIntoString(PATHTOSRC"/lua_constant/set_up_env.lua");
+    s+= loadFileIntoString((Resources::path() + "/lua_constant/set_up_env.lua").c_str());
     if(hasEmitAndNotOutput && !m_emitingNode){
-        s+= loadFileIntoString(PATHTOSRC"/lua_constant/gather_emit.lua");
+        s+= loadFileIntoString((Resources::path() + "/lua_constant/gather_emit.lua").c_str());
     }
     for(auto& st: tweaks){
         Tweak* t = st.second;
@@ -71,7 +71,7 @@ std::string Node::codeAfter()
     string s = "";
 
     if(hasEmitAndNotOutput && !m_emitingNode){//overwrite emit in node space in lua
-        s += loadFileIntoString(PATHTOSRC"/lua_constant/gather_emit_end.lua");
+        s += loadFileIntoString((Resources::path() + "/lua_constant/gather_emit_end.lua").c_str());
     }
     return s;
 }

@@ -3,16 +3,18 @@
 #include <stack>
 #include "NodeLua.h"
 #include "hashlibpp.h"
+#include "Resources.h"
+
 using namespace std;
 
-
 //------------------------------------------------------------------
+
 void GraphMaker::onChange()
 {
   //create master script for emitNode
   ofstream file;
-  file.open("master.lua");
-  file << loadFileIntoString(PATHTOSRC"/lua_constant/header.lua");
+  file.open(masterScriptPath());
+  file << loadFileIntoString((Resources::path() + "/lua_constant/header.lua").c_str());
   ForIndex(i, m_NodeGraph.nodeWindows.size()){
     Node* n = m_NodeGraph.nodeWindows[i]->getNode();
     if (n->isEmitingNode()){
@@ -20,12 +22,13 @@ void GraphMaker::onChange()
     }
   }
   file.close();
-  Updater up;
+  Messaging::msg_update up;
   up.val = 0;
   Messaging::getInstance().send_update(up);
 }
 
 //------------------------------------------------------------------
+
 void GraphMaker::deleteNodeWindow(NodeWindow* nw)
 {
   //remove all the connectiion
@@ -47,7 +50,8 @@ void GraphMaker::deleteNodeWindow(NodeWindow* nw)
 }
 
 //------------------------------------------------------------------
-void GraphMaker::checkError(script_error &err)
+
+void GraphMaker::checkError(Messaging::msg_script_error &err)
 {
   GraphError er;
   ForIndex(i, m_NodeGraph.nodeWindows.size()){
@@ -77,7 +81,9 @@ void GraphMaker::checkError(script_error &err)
 }
 
 //------------------------------------------------------------------
-void GraphMaker::makeNewNode(string path, v2i pos){
+
+void GraphMaker::makeNewNode(string path, v2i pos)
+{
   NodeWindow* n = nullptr;
   int s = 0;
   string name = project.relativePath(path);
@@ -100,25 +106,23 @@ void GraphMaker::makeNewNode(string path, v2i pos){
 
 
 //------------------------------------------------------------------
-void GraphMaker::convert_error(script_error &err){
 
-  if (err.code == 1)//lua error
-  {
+void GraphMaker::convert_error(Messaging::msg_script_error &err)
+{
+  if (err.code == 1) {
     checkError(err);
-  }
-  if (err.code == 2)//...
-  {
-
   }
 }
 
 //------------------------------------------------------------------
+
 void GraphMaker::saveGraph(string path)
 {
   GraphSaver::saveGraph(path, m_NodeGraph);
 }
 
 //------------------------------------------------------------------
+
 void GraphMaker::loadGraph(string path)
 {
   GraphSaver::loadGraph(project, path, m_NodeGraph);
@@ -128,6 +132,7 @@ void GraphMaker::loadGraph(string path)
 }
 
 //-------------------------------------
+
 void GraphMaker::RenderMenu()
 {
   if (ImGui::BeginMainMenuBar())
@@ -182,7 +187,9 @@ void GraphMaker::RenderMenu()
 }
 
 //------------------------------------------------------------------
-void GraphMaker::onIdle(){
+
+void GraphMaker::onIdle()
+{
   ForIndex(i, m_NodeGraph.nodeWindows.size()){
     Node* ni = m_NodeGraph.nodeWindows[i]->getNode();
     if (ni->hasChange()){
@@ -193,7 +200,9 @@ void GraphMaker::onIdle(){
 }
 
 //-------------------------------------
-void GraphMaker::renderImgui(){
+
+void GraphMaker::renderImgui()
+{
   bool mouseDown = ImGui::IsMouseClicked(0);
   onIdle();
   if (m_showRMenu){
@@ -225,3 +234,5 @@ void GraphMaker::renderImgui(){
   ImGui::Render();
 
 }
+
+//-------------------------------------
