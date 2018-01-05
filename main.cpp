@@ -155,7 +155,7 @@ int main(int argc, char **argv)
     paths.push_back("C:\\Program Files\\INRIA\\IceSL\\bin\\");
     paths.push_back("C:\\Program Files (x86)\\INRIA\\IceSL\\bin\\");
     ForIndex(i, paths.size()) {
-      string exe = paths[i] + "IceSL-slicer-d.exe";
+      string exe = paths[i] + "IceSL-slicer.exe";
       if (exists(exe.c_str())) {
         STARTUPINFO si; 
         ZeroMemory(&si, sizeof(STARTUPINFO));
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
         if (!ok) {
           throw Fatal("Cannot launch IceSL.");
         } else {
-          LibSL::System::Process::sleep(10000); // wait a bit for IceSL to init
+          LibSL::System::Process::sleep(2000); // wait a bit for IceSL to init
         }
         break;
       }
