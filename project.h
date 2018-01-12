@@ -49,9 +49,8 @@ public:
     for (directory_iterator itr(directory); itr != directory_iterator(); ++itr)
     {
       std::experimental::filesystem::path file = itr->path();
-      if (!is_directory(file)) {
+      if (!is_directory(file) && strcmp(extractExtension(file.filename().generic_string()).c_str(), "lua") == 0 ) {
         files.push_back(file.filename().generic_string());
-        std::cout << file.filename().generic_string() << std::endl;
       }
     }
   }
@@ -172,17 +171,17 @@ public:
     std::vector<std::string> directories;
     std::string nameDir = "";
     listFolderinDir(directories, current_dir);
+
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 1.0f, 1.0f));
     ForIndex(i, directories.size()){
-      if (ImGui::CollapsingHeader(directories[i].c_str())) {
+      if (ImGui::BeginMenu(directories[i].c_str())) {
         nameDir = recursiveFileSelecter(Resources::toPath(current_dir, directories[i]));
-        //ImGui::EndMenu();
+        ImGui::EndMenu();
       }
     }
     ImGui::PopStyleColor();
+
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1., 1., 1.0, 1));
-    
-    
     ForIndex(i, files.size()) {
       if (ImGui::MenuItem(files[i].c_str())) {
         nameDir = Resources::toPath(current_dir, files[i]);
@@ -195,12 +194,17 @@ public:
 
   //---------------------------------------------------
 
+  bool menu_open = false;
   std::string renderFileSelecter(v2i pos)
   {
     std::string nameDir = "";
-    ImGui::Begin("Menu");
-    nameDir = recursiveFileSelecter(nodefolder());
-    ImGui::SetWindowPos(ImVec2((float)pos[0], (float)pos[1]));
+    ImGui::Begin("MenuPopup", &menu_open, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize);
+    if (ImGui::BeginMenu("Add node...")) {
+      nameDir = recursiveFileSelecter(nodefolder());
+      ImGui::EndMenu();
+    }
+    ImVec2 wpos((float)pos[0], (float)pos[1]);
+    ImGui::SetWindowPos(wpos);
     ImGui::End();
     return nameDir;
   }
