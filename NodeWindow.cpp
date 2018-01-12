@@ -13,10 +13,20 @@ using namespace std;
 
 bool NodeWindow::display()
 {
+  if (node->isMinified()) {
+    drawNodeMinified();
+  }
+  else {
+    drawNode();
+  }
+  return !m_show;
+}
 
+
+void NodeWindow::drawNode() {
   ImVec2 offsetGUI = ImVec2((float)m_size[0], (float)m_size[1]);
 
-  ImGui::Begin(m_name.c_str(), &m_show, offsetGUI);
+  ImGui::Begin(m_name.c_str(), &m_show, offsetGUI, 1.f, ImGuiWindowFlags_NoTitleBar);
   m_drawList = ImGui::GetWindowDrawList();
   handlePosAndSize();
   m_pos = v2i((const int)ImGui::GetWindowPos().x, (const int)ImGui::GetWindowPos().y);
@@ -53,9 +63,44 @@ bool NodeWindow::display()
     m_drawList->AddRect(minc, maxc, ImColor(150, 0, 0, 150), 10.0, 0xFF, err_cont);
   }
   displayNodeName();
+}
 
-  return !m_show;
+void NodeWindow::drawNodeMinified() {
+  ImVec2 offsetGUI = ImVec2((float)m_size[0], (float)m_size[1]);
 
+  ImGui::Begin(m_name.c_str(), &m_show, offsetGUI, 1.f, ImGuiWindowFlags_NoTitleBar);
+  m_drawList = ImGui::GetWindowDrawList();
+  handlePosAndSize();
+  m_pos = v2i((const int)ImGui::GetWindowPos().x, (const int)ImGui::GetWindowPos().y);
+  m_size = v2i((const int)ImGui::GetWindowSize().x, (const int)ImGui::GetWindowSize().y);
+  ImVec2 cursor = ImGui::GetCursorScreenPos();
+  ImGui::SetCursorScreenPos(cursor);
+
+  float err_cont = 5;
+  ImVec2 minc = ImVec2(ImGui::GetWindowPos().x - err_cont / 2, ImGui::GetWindowPos().y - err_cont / 2);
+  ImVec2 maxc = ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x + err_cont / 2, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y + err_cont / 2);
+
+  //if(ImGui::Button("reload")){
+  //    node->reloadProgram();
+  //}
+  ImGui::End();
+
+  //Node* n = node;
+  ForIndex(i, previousConnectedWindow.size()) {
+    NodeWindow* w = previousConnectedWindow[i];
+    if (w == nullptr)continue;
+    string s = node->getPrevNamed()[node->getInputName()[i]].second;
+    Node* n = w->node;
+    int outputSlot = n->getIndiceOutByName(s);
+    ImVec2 p1 = w->GetOutputSlotPos(outputSlot);
+    ImVec2 p2 = GetInputSlotPos(i);
+    ImVec2 p3 = ImVec2(p1.x + 50, p1.y);
+    ImVec2 p4 = ImVec2(p2.x - 50, p2.y);
+    m_drawList->AddBezierCurve(p1, p3, p4, p2, ImColor(200, 200, 100), 3.0f);
+  }
+  if (node->isInErrorState()) {
+    m_drawList->AddRect(minc, maxc, ImColor(150, 0, 0, 150), 10.0, 0xFF, err_cont);
+  }
 }
 
 //------------------------------------------------------------------
@@ -149,7 +194,6 @@ void NodeWindow::displayNodeName()
       | ImGuiWindowFlags_NoMove
       | ImGuiWindowFlags_NoSavedSettings
       | ImGuiWindowFlags_NoTitleBar
-      //|ImGuiWindowFlags_NoBringToFrontOnFocus
       | ImGuiWindowFlags_AlwaysAutoResize
     );
 
@@ -174,7 +218,6 @@ void NodeWindow::displayNodeName()
     ImGui::SetWindowPos(ImVec2(posX, posY));
     ImGui::Text(node->getOutputName()[i].c_str());
     ImGui::End();
-
   }
   ImGui::PopStyleVar();
   ImGui::PopStyleColor();

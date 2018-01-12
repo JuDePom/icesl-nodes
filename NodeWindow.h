@@ -37,6 +37,8 @@ public:
         previousConnectedWindow.resize(n->getInputName().size());
     }
 
+    void drawNode();
+    void drawNodeMinified();
     void drawInputValue();
     void drawOutputValue();
 

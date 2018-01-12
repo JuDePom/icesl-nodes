@@ -33,9 +33,14 @@ protected:
   std::string m_RelativePath;//path relative to the project directory
   std::string m_Program;//code
 
+  std::string m_name;
+  std::string m_iconpath;
+
   bool m_emitingNode;//tag the special type of node that is emitting into the scene
   bool hasEmitAndNotOutput;//tag the node that are using emit and not output
   bool errorState;//tag the node if it doesn't compile(IceSL give the error back).
+  bool m_isMinified;//tag the node if minified
+
 public:
   void onChange(); //call back on change on tweaks and others
 
@@ -47,6 +52,10 @@ public:
       errorState = b;
   }
 
+  void setMinified(bool b) {
+      m_isMinified = b;
+  }
+
   bool isInErrorState(){
       return errorState;
   }
@@ -55,13 +64,16 @@ public:
       return m_emitingNode;
   }
 
+  bool isMinified() {
+      return m_isMinified;
+  }
+
   std::map<std::string,Tweak*>& getTweaks(){ return tweaks;}
   Node()
   {
       m_emitingNode = false;
       errorState = false;
       hasEmitAndNotOutput = false;
-
   }
   Node(std::string path, std::string relativePath):m_Path(path)
   {
@@ -71,7 +83,7 @@ public:
     m_timeStamp = fileTimestamp(m_Path);
     parse();
     errorState = false;
-
+    m_isMinified = false;
   }
 
   int getIndiceOutByName(std::string s){
@@ -104,6 +116,8 @@ public:
   void changePath(std::string path,Project p);
   std::string getRelativePath(){return m_RelativePath;}
 
+  std::string getName() { return m_name; }
+
   std::string codeBefore(); //code to write before writing the node in the master script
   std::string codeAfter(); //code to write after writing the node in the master script
   void removeConnectionTo(Node* n);
@@ -116,6 +130,7 @@ public:
   void parse(); //parse to find input, output, gather emit
   void parseTweaks(); //parse to find the tweaks and add them in the interface.
   void parseInputAndOutput();
+  void parseOptional();
   void reloadProgram();
   t_FileTime fileTimestamp(std::string file) const;
   bool fileChanged(std::string file, t_FileTime& _last) const;

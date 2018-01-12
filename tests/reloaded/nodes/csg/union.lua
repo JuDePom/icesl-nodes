@@ -1,4 +1,9 @@
-a = input("A")
-b = input("B")
-df = union(a,b)
-output("union",df)
+name("union")
+icon("union.png")
+
+a = input("shape A")
+b = input("shape B")
+
+res = union(a, b)
+
+output("union",res)

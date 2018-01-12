@@ -256,7 +256,44 @@ void Node::parseInputAndOutput()
     }catch (const std::regex_error& e) {
         std::cout << "regex_error caught: " << e.what() << '\n';
     }
+}
 
+//------------------------------------------------------------------------------------
+void Node::parseOptional()
+{
+  string toParse = m_Program;
+  string uncommented;
+  std::regex nocomment("(--\\[\\[(.|\n)*?\\]\\]--)");
+  regex_replace(std::back_inserter(uncommented), toParse.begin(), toParse.end(), nocomment, "$2");
+
+  std::regex nocomment2("(--.*\\n)");
+  string uncommented2;
+  regex_replace(std::back_inserter(uncommented2), uncommented.begin(), uncommented.end(), nocomment2, "$2");
+
+  try {
+    string outcome = uncommented2;
+    std::regex outputEx("name\\([ \n]*[\"\']([\\w_]*)[\"\'][ \n]*,(.|\n)*?\\)");
+    std::smatch sm;
+    while (regex_search(outcome, sm, outputEx)) {
+      m_name = sm[1];
+      outcome = sm.suffix().str();
+    }
+  }
+  catch (const std::regex_error& e) {
+    std::cout << "regex_error caught: " << e.what() << '\n';
+  }
+  try {
+    string income = uncommented2;
+    std::regex inputEx("icon\\([ \n]*[\"\']([\\w_]*)[\"\'][ \n]*\\)");
+    std::smatch sm;
+    while (regex_search(income, sm, inputEx)) {
+      m_iconpath = sm[1];
+      income = sm.suffix().str();
+    }
+  }
+  catch (const std::regex_error& e) {
+    std::cout << "regex_error caught: " << e.what() << '\n';
+  }
 }
 
 //-------------------------------------------------------
@@ -266,6 +303,7 @@ void Node::parseInputAndOutput()
 void Node::parse(){
     parseTweaks();
     parseInputAndOutput();
+    parseOptional();
 }
 
 
