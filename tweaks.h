@@ -37,7 +37,7 @@ class TweakString: public Tweak{
 public:
     TweakString(Node* node,std::string name, std::string svalue):Tweak(node,name,t_string){
         memcpy(value,svalue.c_str(),svalue.size());
-
+        value[svalue.size()] = '\0';
     }
 
     void drawUi(){
