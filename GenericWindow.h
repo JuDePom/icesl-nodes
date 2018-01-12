@@ -48,8 +48,8 @@ public:
 
     void handlePosAndSize(){
         if(m_isNew){
-            ImVec2 posVec2 = ImVec2(m_pos[0],m_pos[1]);
-            ImVec2 sizeVec2 = ImVec2(m_size[0],m_size[1]);
+            ImVec2 posVec2  = ImVec2((float)m_pos[0] , (float)m_pos[1]);
+            ImVec2 sizeVec2 = ImVec2((float)m_size[0], (float)m_size[1]);
             ImGui::SetWindowPos(posVec2);
             ImGui::SetWindowSize(sizeVec2);
             m_isNew =false;
@@ -82,12 +82,12 @@ public:
     bool display(){
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
         if(strcmp(m_message.c_str(),"") == 0){
-            ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.7,1.0,0.7,1));
+            ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.7f,1.0f,0.7f,1.0f));
         }else{
-            ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(1.0,0.0,0.0,1));
+            ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(1.0f,0.0f,0.0f,1.0f));
 
         }
-        ImGui::Begin(m_name.c_str(),&m_show,ImVec2(m_size[0],m_size[1]),-1.0f, ImGuiWindowFlags_NoInputs |
+        ImGui::Begin(m_name.c_str(),&m_show,ImVec2((float)m_size[0],(float)m_size[1]),-1.0f, ImGuiWindowFlags_NoInputs |
                 ImGuiWindowFlags_NoMove |
                 ImGuiWindowFlags_NoSavedSettings|
                 ImGuiWindowFlags_NoTitleBar

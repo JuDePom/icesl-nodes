@@ -20,10 +20,14 @@ protected:
   std::map<std::string,Node*> nextNamed;
   std::vector<std::string> inputName;
   std::vector<std::string> outputName;
+  std::vector<std::string> csgInputName;
+  std::vector<std::string> csgOutputName;
   std::map<std::string,Tweak*> tweaks;
 
   void makeNewInput(std::string name);
   void makeNewOutput(std::string name);
+  void makeNewCSGInput(std::string name);
+  void makeNewCSGOutput(std::string name);
 
   std::string m_Path;//absolute path
   std::string m_RelativePath;//path relative to the project directory
@@ -89,10 +93,13 @@ public:
     sl_assert(false);
     return -1;
   }
+
   std::map<std::string,std::pair<Node*,std::string>>& getPrevNamed(){return prevNamed;}
   std::map<std::string,Node*>& getNextNamed(){return nextNamed;}
   std::vector<std::string>& getInputName(){return inputName;}
-  std::vector<std::string>& getoutputName(){return outputName;  }
+  std::vector<std::string>& getOutputName(){return outputName;}
+  std::vector<std::string>& getCSGInputName() { return csgInputName; }
+  std::vector<std::string>& getCSGOutputName() { return csgOutputName; }
   std::string getPath(){return m_Path;}
   void changePath(std::string path,Project p);
   std::string getRelativePath(){return m_RelativePath;}

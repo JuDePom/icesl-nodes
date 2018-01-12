@@ -9,6 +9,8 @@
 
 #include "FileDialog.h"
 
+#include "Resources.h"
+
 #ifndef WIN32
 
 static QApplication *s_QtApp = NULL;
@@ -138,12 +140,19 @@ std::string openPathDialog()
     SetCurrentDirectoryA(current);
     string fname = string(of.lpstrFile);
 		std::string directory;
-		const size_t last_slash_idx = fname.rfind('\\');
-		if (std::string::npos != last_slash_idx) {
-      directory = fname.substr(0, last_slash_idx);
-      return directory;
-		}
-		return fname;
+		const size_t last_slash_idx = fname.rfind(Resources::separator());
+		int status = CreateDirectory(fname.c_str(), NULL);
+    FILE * isFile = fopen(fname.c_str(), "r");
+    if (isFile) { //if the user accidentaly clocked on a file create the project into the current directory
+      fclose(isFile);
+      return fname.substr(0, last_slash_idx);
+    }
+    if (status == ERROR_PATH_NOT_FOUND) {
+      return "";
+    }
+    else {
+      return fname;
+    }
 	}
   SetCurrentDirectoryA(current);
   return "";

@@ -22,8 +22,24 @@ void Node::makeNewOutput(string name){
 
     if(getNextNamed().find(name) != getNextNamed().end())return;
     getNextNamed()[name] = nullptr;
-    getoutputName().push_back(name);
+    getOutputName().push_back(name);
     return;
+}
+
+//-------------------------------------------------------
+void Node::makeNewCSGInput(string name) {
+  if (getPrevNamed().find(name) != getPrevNamed().end())return;
+  getPrevNamed().insert(std::make_pair(name, make_pair(nullptr, "")));
+  getCSGInputName().push_back(name);
+}
+
+//-------------------------------------------------------
+void Node::makeNewCSGOutput(string name) {
+
+  if (getNextNamed().find(name) != getNextNamed().end())return;
+  getNextNamed()[name] = nullptr;
+  getCSGOutputName().push_back(name);
+  return;
 }
 
 //-------------------------------------------------------
@@ -54,9 +70,9 @@ std::string Node::codeBefore(){
         s+="__inputmap[\""+edge.first+"\"] = \"" + edge.second.second+s2+"\"\n";
     }
 
-    s+= loadFileIntoString((Resources::path() + "/lua_constant/set_up_env.lua").c_str());
+    s+= loadFileIntoString(Resources::toPath(Resources::path(), "lua_constant", "set_up_env.lua").c_str());
     if(hasEmitAndNotOutput && !m_emitingNode){
-        s+= loadFileIntoString((Resources::path() + "/lua_constant/gather_emit.lua").c_str());
+        s+= loadFileIntoString(Resources::toPath(Resources::path(), "lua_constant", "gather_emit.lua").c_str());
     }
     for(auto& st: tweaks){
         Tweak* t = st.second;
@@ -71,7 +87,7 @@ std::string Node::codeAfter()
     string s = "";
 
     if(hasEmitAndNotOutput && !m_emitingNode){//overwrite emit in node space in lua
-        s += loadFileIntoString((Resources::path() + "/lua_constant/gather_emit_end.lua").c_str());
+        s += loadFileIntoString(Resources::toPath(Resources::path(), "lua_constant", "gather_emit_end.lua").c_str());
     }
     return s;
 }
@@ -202,6 +218,33 @@ void Node::parseInputAndOutput()
     }catch (const std::regex_error& e) {
         std::cout << "regex_error caught: " << e.what() << '\n';
     }
+
+    try {
+      string outcome = uncommented2;
+      std::regex outputEx("csgoutput\\([ \n]*[\"\']([\\w_]*)[\"\'][ \n]*,(.|\n)*?\\)");
+      std::smatch sm;
+      while (regex_search(outcome, sm, outputEx)) {
+        makeNewCSGOutput(sm[1]);
+        outcome = sm.suffix().str();
+      }
+      std::cout << "CSG output" << std::endl;
+    }
+    catch (const std::regex_error& e) {
+      std::cout << "regex_error caught: " << e.what() << '\n';
+    }
+    try {
+      string income = uncommented2;
+      std::regex inputEx("csginput\\([ \n]*[\"\']([\\w_]*)[\"\'][ \n]*\\)");
+      std::smatch sm;
+      while (regex_search(income, sm, inputEx)) {
+        makeNewCSGInput(sm[1]);
+        income = sm.suffix().str();
+      }
+    }
+    catch (const std::regex_error& e) {
+      std::cout << "regex_error caught: " << e.what() << '\n';
+    }
+
     try{
         string income = uncommented2;
         std::regex outputEx("emit");

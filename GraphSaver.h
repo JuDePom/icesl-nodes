@@ -3,6 +3,8 @@
 #include "NodeWindow.h"
 #include "tinyxml.h"
 
+#include "Resources.h"
+
 
 //the windows. this is used to save and load the xml
 class NodeGraph
@@ -24,7 +26,7 @@ struct connection{
 class GraphSaver
 {
 public:
-    static void saveGraph(std::string path, NodeGraph& nodeGraph);
+    static void saveGraph(Project& project, std::string path, NodeGraph& nodeGraph);
     static void loadGraph(Project& project, std::string path, NodeGraph& nodeGraph);
     static void nameWindow(Project& project, NodeGraph &nodeGraph, NodeWindow* n);
     static bool loadNode(Project& project, std::map<std::string, NodeWindow *>& nodebyName, std::vector<connection> &connections, TiXmlElement* element,NodeGraph& nodeGraph);

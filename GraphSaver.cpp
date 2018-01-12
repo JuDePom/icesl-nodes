@@ -30,7 +30,7 @@ void GraphSaver::nameWindow(Project& project, NodeGraph& nodeGraph, NodeWindow* 
 }
 
 //------------------------------------------------------------------
-void GraphSaver::saveGraph(string path,NodeGraph& nodeGraph)
+void GraphSaver::saveGraph(Project& project, string path, NodeGraph& nodeGraph)
 {
     TiXmlDocument doc;
     TiXmlDeclaration * decl = new TiXmlDeclaration("1.0", "", "");
@@ -44,7 +44,7 @@ void GraphSaver::saveGraph(string path,NodeGraph& nodeGraph)
         element->SetAttribute("type","node");
         TiXmlElement * elementFile = new TiXmlElement("file");
 
-        string relativePath = string("node/")+n->getRelativePath();
+        string relativePath = Resources::toPath(project.nodefolder(), n->getRelativePath());
         elementFile->SetAttribute("path",relativePath.c_str());
         elementFile->SetAttribute("hash",n->hashProgram().c_str());
         TiXmlElement * elementPos = new TiXmlElement("position");
@@ -187,7 +187,7 @@ bool GraphSaver::WriteValue(Project& project, NodeWindow* nw,std::vector<connect
         string relative = keyVal["path"];//this is a relative path from the xml to the lua
 
         string storedHash = keyVal[string("hash")];
-        string luaPath = project.path + "/" + relative;
+        string luaPath = Resources::toPath(project.path, relative);
         string hash = myWrapper->getHashFromString(loadFileIntoString(luaPath.c_str()));
         delete myWrapper;
         //if(strcmp(hash.c_str(), storedHash.c_str()) != 0)return false;

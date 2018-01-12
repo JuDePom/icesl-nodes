@@ -1,6 +1,6 @@
 shape = input("Shape")
+seed = input("Seed")
 
-seed = input("seed")
 ds = node_scalar("distrib",0.5,0.0,1.0)
 tr = node_scalar("translate",0.0)
 s = distribute(shape, ds)

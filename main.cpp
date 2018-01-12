@@ -12,6 +12,7 @@
 #include "FileDialog.h"
 #include "NodeWindow.h"
 #include "NodeLua.h"
+#include "Resources.h"
 
 #include <thread>
 
@@ -76,13 +77,23 @@ void mainMousePressed(uint x, uint y, uint button, uint flags)
   if (GraphMaker::getInstance().isRMenuShown() && flags == LIBSL_BUTTON_DOWN && button == LIBSL_LEFT_BUTTON) {
     GraphMaker::getInstance().setShowRMenu(false);
   }
+
+  if (flags == LIBSL_BUTTON_DOWN && button == LIBSL_MIDDLE_BUTTON) {
+    GraphMaker::getInstance().setMousePos(v2i(x, y));
+    GraphMaker::getInstance().setMoveGraph(true);
+  }
+  if (flags == LIBSL_BUTTON_UP && button == LIBSL_MIDDLE_BUTTON) {
+    GraphMaker::getInstance().setMoveGraph(false);
+  }
 }
 
 // --------------------------------------------------------------
 
 void mainMouseMotion(uint x, uint y)
 {
-
+  if (GraphMaker::getInstance().isGraphMoving()) {
+    GraphMaker::getInstance().moveOrigin(v2i(x, y));
+  }
 
 }
 
@@ -150,12 +161,12 @@ int main(int argc, char **argv)
 #ifdef WIN32
     // attempts to launch IceSL
     vector<string> paths;
-    paths.push_back(".\\");
-    paths.push_back(string(LibSL::System::Application::executablePath()) + "\\");
-    paths.push_back("C:\\Program Files\\INRIA\\IceSL\\bin\\");
-    paths.push_back("C:\\Program Files (x86)\\INRIA\\IceSL\\bin\\");
+    paths.push_back("." + Resources::separator());
+    paths.push_back(string(LibSL::System::Application::executablePath()) + Resources::separator());
+    paths.push_back(Resources::toPath("C:", "Program Files", "INRIA", "IceSL", "bin"));
+    paths.push_back(Resources::toPath("C:", "Program Files (x86)", "INRIA", "IceSL", "bin"));
     ForIndex(i, paths.size()) {
-      string exe = paths[i] + "IceSL-slicer.exe";
+      string exe = Resources::toPath(paths[i], "IceSL-slicer.exe");
       if (exists(exe.c_str())) {
         STARTUPINFO si; 
         ZeroMemory(&si, sizeof(STARTUPINFO));

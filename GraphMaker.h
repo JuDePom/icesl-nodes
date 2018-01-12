@@ -9,12 +9,12 @@
 #include <cstdio>
 
 #include "project.h"
-#include "NodeWindow.h"
-#include "GraphSaver.h"
-#include "GenericWindow.h"
-#include "graphError.h"
-#include "GraphSaver.h"
 
+#include "NodeWindow.h"
+#include "GenericWindow.h"
+
+#include "GraphSaver.h"
+#include "GraphError.h"
 
 class GraphMaker
 {
@@ -25,9 +25,11 @@ class GraphMaker
 
   bool          activeProject; // TODO: naming convetion
   bool          m_showRMenu;
+  bool          m_moveGraph;
   int           m_W;
   int           m_H;
   v2i           m_mousePos;
+  v2i           m_origin;
   NodeSelecter  m_nodeSelecter;
   std::string   m_MasterScriptPath;
 
@@ -40,6 +42,7 @@ class GraphMaker
   {
     activeProject = false;
     m_showRMenu = false;
+    m_moveGraph = false;
     m_mousePos = v2i(0, 0);
     // produce temporary file for master scripts
     m_MasterScriptPath = tempFileName();
@@ -81,7 +84,7 @@ public:
     project.path = path;
     activeProject = true;
     project.createNodefolder();
-    std::string source(Resources::path() + "/basic_nodes");
+    std::string source(Resources::toPath(Resources::path(), "basic_nodes"));
     std::string dest(project.nodefolder());
     project.copyDir(source, dest);
     project.copyEmitNode();
@@ -102,9 +105,29 @@ public:
     return m_showRMenu;
   }
 
+  void setMoveGraph(bool b)
+  {
+    m_moveGraph = b;
+  }
+
+  bool isGraphMoving()
+  {
+    return m_moveGraph;
+  }
+
   void setMousePos(v2i vec)
   {
     m_mousePos = vec;
+  }
+
+  void moveOrigin(v2i vec)
+  {
+    m_origin = m_origin + m_mousePos - vec;
+  }
+
+  v2i getOrigin()
+  {
+    return m_origin;
   }
 
   void setWindow(int W, int H)

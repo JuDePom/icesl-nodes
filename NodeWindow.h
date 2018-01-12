@@ -51,11 +51,12 @@ public:
         node =n;
         previousConnectedWindow.resize(n->getInputName().size());
     }
-    ImVec2 GetInputSlotPos(int slot_no)   const { return ImVec2(m_pos[0], m_pos[1] + m_size[1] * ((float)slot_no+1) / (node->getPrevNamed().size()+1.0)); }
-    ImVec2 GetOutputSlotPos(int slot_no)  const { return ImVec2(m_pos[0] + m_size[0], m_pos[1] + m_size[1] * ((float)slot_no+1) / (node->getNextNamed().size()+1.0)); }
+
+    ImVec2 GetInputSlotPos(int slot_no)   const { return ImVec2((float)m_pos[0], (float)m_pos[1] + m_size[1] * ((float)slot_no+1.0f) / (node->getPrevNamed().size()+1.0f)); }
+    ImVec2 GetOutputSlotPos(int slot_no)  const { return ImVec2((float)m_pos[0] + m_size[0], m_pos[1] + m_size[1] * ((float)slot_no+1) / (node->getNextNamed().size()+1.0f)); }
 
     bool display();
-    void renderAndPick(NodeSelecter &ns, bool mouseDown);
+    void renderAndPick(v2i origin, NodeSelecter &ns, bool mouseDown);
     void displayNodeName();
 
     void removeConnectionTo(NodeWindow* nw){

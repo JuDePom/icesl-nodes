@@ -14,13 +14,13 @@ using namespace std;
 bool NodeWindow::display()
 {
 
-  ImVec2 offsetGUI = ImVec2(m_size[0], m_size[1]);
+  ImVec2 offsetGUI = ImVec2((float)m_size[0], (float)m_size[1]);
 
   ImGui::Begin(m_name.c_str(), &m_show, offsetGUI);
   m_drawList = ImGui::GetWindowDrawList();
   handlePosAndSize();
-  m_pos = v2i(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y);
-  m_size = v2i(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
+  m_pos = v2i((const int)ImGui::GetWindowPos().x, (const int)ImGui::GetWindowPos().y);
+  m_size = v2i((const int)ImGui::GetWindowSize().x, (const int)ImGui::GetWindowSize().y);
   ImVec2 cursor = ImGui::GetCursorScreenPos();
   ImGui::SetCursorScreenPos(cursor);
 
@@ -60,13 +60,19 @@ bool NodeWindow::display()
 
 //------------------------------------------------------------------
 
-void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown) 
+void drawCSGInputValues() {
+
+}
+
+//------------------------------------------------------------------
+
+void NodeWindow::renderAndPick(v2i offset, NodeSelecter &ns, bool mouseDown) 
 {
   ImColor color = ImColor(150, 150, 150, 150);
-  v2i Mpos = v2i(ImGui::GetMousePos().x, ImGui::GetMousePos().y);
+  v2i Mpos = v2i((const int)ImGui::GetMousePos().x, (const int)ImGui::GetMousePos().y);
   //draw input circles
   ForIndex(i, node->getInputName().size()) {
-    v2i Cpos = v2i(GetInputSlotPos(i).x, GetInputSlotPos(i).y);
+    v2i Cpos = v2i((const int)GetInputSlotPos(i).x, (const int)GetInputSlotPos(i).y) + offset;
     if (sqLength(Cpos - Mpos) < 100) {
       color = ImColor(150, 0, 0, 150);
       if (mouseDown) {
@@ -83,8 +89,8 @@ void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown)
   }
 
   //draw output circles
-  ForIndex(i, node->getoutputName().size()) {
-    v2i Cpos = v2i(GetOutputSlotPos(i).x, GetOutputSlotPos(i).y);
+  ForIndex(i, node->getOutputName().size()) {
+    v2i Cpos = v2i((const int)GetOutputSlotPos(i).x, (const int)GetOutputSlotPos(i).y);
     if (sqLength(Cpos - Mpos) < 100) {
       color = ImColor(150, 0, 0, 150);
       if (mouseDown) {
@@ -128,9 +134,9 @@ void NodeWindow::displayNodeName()
   ForIndex(i, node->getInputName().size()) {
     MaxInSize = max(MaxInSize, node->getInputName()[i].size() * char_size);
   }
-  ForIndex(i, node->getoutputName().size()) {
+  ForIndex(i, node->getOutputName().size()) {
     //right alignement: displace the cursor by the number of char * the size of a char - the circle ray
-    MaxOutSize = max(MaxOutSize, node->getoutputName()[i].size() * char_size);
+    MaxOutSize = max(MaxOutSize, node->getOutputName()[i].size() * char_size);
   }
   bool open = true;
   string name = m_name + "around";
@@ -138,7 +144,7 @@ void NodeWindow::displayNodeName()
   ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0, 0.0, 0.0, 1));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
   ForIndex(i, node->getInputName().size()) {
-    ImGui::Begin(name.c_str(), &open, ImVec2(m_size[0], m_size[1]), 0.5,
+    ImGui::Begin(name.c_str(), &open, ImVec2((float)m_size[0], (float)m_size[1]), 0.5,
       ImGuiWindowFlags_NoInputs
       | ImGuiWindowFlags_NoMove
       | ImGuiWindowFlags_NoSavedSettings
@@ -154,8 +160,8 @@ void NodeWindow::displayNodeName()
     ImGui::End();
   }
 
-  ForIndex(i, node->getoutputName().size()) {
-    ImGui::Begin(name.c_str(), &open, ImVec2(m_size[0], m_size[1]), 0.5,
+  ForIndex(i, node->getOutputName().size()) {
+    ImGui::Begin(name.c_str(), &open, ImVec2((float)m_size[0], (float)m_size[1]), 0.5,
       ImGuiWindowFlags_NoInputs
       | ImGuiWindowFlags_NoMove
       | ImGuiWindowFlags_NoSavedSettings
@@ -166,7 +172,7 @@ void NodeWindow::displayNodeName()
     float posX = GetOutputSlotPos(i).x;
     float posY = GetOutputSlotPos(i).y;
     ImGui::SetWindowPos(ImVec2(posX, posY));
-    ImGui::Text(node->getoutputName()[i].c_str());
+    ImGui::Text(node->getOutputName()[i].c_str());
     ImGui::End();
 
   }
@@ -184,7 +190,7 @@ void NodeWindow::connectPreviousWindow(NodeWindow* prev, int inpos, int outpos)
   if (prev->node->isAscendent(node))return;//prevent cycle
   previousConnectedWindow[inpos] = prev;
   Node* n = prev->node;
-  node->connect(n, n->getoutputName()[outpos], inpos);
+  node->connect(n, n->getOutputName()[outpos], inpos);
   n->onChange();
 
 }

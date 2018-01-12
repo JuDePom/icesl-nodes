@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<node186921208 type="node">
+    <file path="nodes/primitives/sphere.lua" hash="fbb08d4a90b69e34c42a8eb77db35258" />
+    <position x="362" y="410" />
+    <size x="100" y="100" />
+    <Tweaks>
+        <Ray type="2" name="Ray" value="10.000000" />
+    </Tweaks>
+</node186921208>
+<node186918712 type="node">
+    <file path="nodes/output/emit.lua" hash="cfa180b733b5a2ab55fb3441a80affce" />
+    <position x="534" y="181" />
+    <size x="334" y="95" />
+    <input inputNode="node186918712" inputField="Shape" outputNode="node186921208" outputField="sphere" />
+    <Tweaks>
+        <brush type="1" name="brush" value="0" />
+    </Tweaks>
+</node186918712>

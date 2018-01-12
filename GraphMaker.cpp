@@ -14,7 +14,9 @@ void GraphMaker::onChange()
   //create master script for emitNode
   ofstream file;
   file.open(masterScriptPath());
-  file << loadFileIntoString((Resources::path() + "/lua_constant/header.lua").c_str());
+  string path = Resources::toPath(Resources::path(), "lua_constant", "header.lua");
+  const char *header = path.c_str();
+  file << loadFileIntoString(header);
   ForIndex(i, m_NodeGraph.nodeWindows.size()){
     Node* n = m_NodeGraph.nodeWindows[i]->getNode();
     if (n->isEmitingNode()){
@@ -118,7 +120,7 @@ void GraphMaker::convert_error(Messaging::msg_script_error &err)
 
 void GraphMaker::saveGraph(string path)
 {
-  GraphSaver::saveGraph(path, m_NodeGraph);
+  GraphSaver::saveGraph(project, path, m_NodeGraph);
 }
 
 //------------------------------------------------------------------
@@ -154,7 +156,7 @@ void GraphMaker::RenderMenu()
         createProject(path);
       }
       if (ImGui::MenuItem("Save", "CTRL+S", false, activeProject)) {
-        saveGraph(getProject().path + "/graph.xml");
+        saveGraph(getProject().path +  "graph.xml");
       }
       if (ImGui::MenuItem("Save As..", "", false, activeProject)) {
         string path = saveFileDialog("test");
@@ -220,7 +222,7 @@ void GraphMaker::renderImgui()
     if (toDelete) {//clicked on the little cross
       deleteNodeWindow(getNodeWindows()[i]);
     } else {
-      getNodeWindows()[i]->renderAndPick(m_nodeSelecter, mouseDown);
+      getNodeWindows()[i]->renderAndPick(m_origin, m_nodeSelecter, mouseDown);
     }
   }
   //nothing has been picked but mouse was Down
